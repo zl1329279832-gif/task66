@@ -58,7 +58,7 @@
                         <a style="text-decoration:none" class="el-button el-button--success"
                            v-if="isAuth('aichong','导入导出')"
                            icon="el-icon-download"
-                           href="http://localhost:8080/tongchengshangmenweiliuxitong/upload/aichongMuBan.xls"
+                           href="/tongchengshangmenweiliuxitong/upload/aichongMuBan.xls"
                         >批量导入爱宠天地数据模板</a>
                         &nbsp;
                         <el-upload

@@ -1,0 +1,23 @@
+# ====== 本地开发环境 ======
+server:
+  port: 8080
+  servlet:
+    context-path: /tongchengshangmenweiliuxitong
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/tongchengshangmenweiliuxitong?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+  resources:
+    static-locations: classpath:static/,file:static/
+
+# 文件上传目录（本地使用相对路径）
+app:
+  upload-dir: ./upload
+
+#打印sql语句
+logging:
+  level:
+    com.dao: debug

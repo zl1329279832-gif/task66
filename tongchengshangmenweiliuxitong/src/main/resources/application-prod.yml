@@ -1,0 +1,24 @@
+# ====== 生产环境 ======
+server:
+  port: 8080
+  servlet:
+    context-path: /tongchengshangmenweiliuxitong
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:prod-db}:${DB_PORT:3306}/tongchengshangmenweiliuxitong?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=false
+    username: ${DB_USER:root}
+    password: ${DB_PASS:changeme}
+  resources:
+    static-locations: classpath:static/
+
+# 文件上传目录（Docker 卷挂载路径）
+app:
+  upload-dir: ${UPLOAD_DIR:/data/upload}
+
+# 生产环境关闭 SQL 日志
+logging:
+  level:
+    com.dao: warn
+    root: info

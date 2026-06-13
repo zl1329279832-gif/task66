@@ -62,7 +62,7 @@ var indexNav = [
 ]
 
 // 已废弃,不用了
-var adminurl =  "http://localhost:8080/tongchengshangmenweiliuxitong/admin/dist/index.html#/login";
+var adminurl = window.location.protocol + '//' + window.location.host + '/tongchengshangmenweiliuxitong/admin/dist/index.html#/login';
 
 
 

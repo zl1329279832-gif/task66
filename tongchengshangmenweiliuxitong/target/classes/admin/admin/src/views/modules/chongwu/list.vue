@@ -58,7 +58,7 @@
                         <a style="text-decoration:none" class="el-button el-button--success"
                            v-if="isAuth('chongwu','导入导出')"
                            icon="el-icon-download"
-                           href="http://localhost:8080/tongchengshangmenweiliuxitong/upload/chongwuMuBan.xls"
+                           href="/tongchengshangmenweiliuxitong/upload/chongwuMuBan.xls"
                         >批量导入宠物数据模板</a>
                         &nbsp;
                         <el-upload

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tongchengshangmenweiliuxitong
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------- 前端：Vue Admin 构建 ----------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+          cache: 'npm'
+          cache-dependency-path: tongchengshangmenweiliuxitong/src/main/resources/admin/admin/package-lock.json
+
+      - name: Install & build Vue admin
+        working-directory: tongchengshangmenweiliuxitong/src/main/resources/admin/admin
+        run: |
+          npm ci
+          npm run build
+
+      # ---------- 后端：Maven 构建 ----------
+      - name: Setup JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          cache: 'maven'
+
+      - name: Maven package (staging profile)
+        run: mvn package -P staging -DskipTests -B
+
+      # ---------- 产物归档 ----------
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: tongchengshangmenweiliuxitong/target/*.jar
+          retention-days: 7

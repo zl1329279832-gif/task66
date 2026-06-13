@@ -145,7 +145,7 @@
             methods: {
                 //分享
                 share(){
-                    let element = createElement("http://localhost:8080/tongchengshangmenweiliuxitong/front/index.html?url="+"./pages/chongwuCollection/detail.html?id="+this.id);
+                    let element = createElement(window.location.origin+'/tongchengshangmenweiliuxitong/front/index.html?url='+"./pages/chongwuCollection/detail.html?id="+this.id);
                     element.select();
                     element.setSelectionRange(0, element.value.length);
                     document.execCommand('copy');

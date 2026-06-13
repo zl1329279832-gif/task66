@@ -1,27 +1,17 @@
-# Tomcat
-server:
-    tomcat:
-        uri-encoding: UTF-8
-    port: 8080
-    servlet:
-        context-path: /tongchengshangmenweiliuxitong
-
+# ====== 公共配置（所有环境共享） ======
 spring:
-    datasource:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/tongchengshangmenweiliuxitong?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=false
-        username: root
-        password: 123456
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
 
+server:
+  tomcat:
+    uri-encoding: UTF-8
 
-    servlet:
-      multipart:
-        max-file-size: 1000MB
-        max-request-size: 1000MB
-    resources:
-      static-locations: classpath:static/,file:static/
-
-#mybatis
+#mybatis-plus
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
   #实体扫描，多个package用逗号或者分号分隔
@@ -44,10 +34,4 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     cache-enabled: false
     call-setters-on-nulls: true
-    #springboot 项目mybatis plus 设置 jdbcTypeForNull (oracle数据库需配置JdbcType.NULL, 默认是Other)
     jdbc-type-for-null: 'null'
-
-#打印sql语句
-logging:
-  level:
-    com.dao: debug
