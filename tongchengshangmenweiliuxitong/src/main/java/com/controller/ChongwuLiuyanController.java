@@ -138,8 +138,14 @@ public class ChongwuLiuyanController {
         String role = String.valueOf(request.getSession().getAttribute("role"));
         if(false)
             return R.error(511,"永远不会进入");
-        else if("用户".equals(role))
-            chongwuLiuyan.setYonghuId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
+        else if("用户".equals(role)){
+            Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+            chongwuLiuyan.setYonghuId(sessionUserId);
+            // 评价前置校验：必须存在已完成的预约
+            if(!chongwuYuyueService.hasCompletedBooking(sessionUserId, chongwuLiuyan.getChongwuId())){
+                return R.error(511,"您尚未完成该宠物的预约，无法评价");
+            }
+        }
 
         chongwuLiuyan.setCreateTime(new Date());
         chongwuLiuyan.setInsertTime(new Date());
@@ -157,10 +163,14 @@ public class ChongwuLiuyanController {
         ChongwuLiuyanEntity oldChongwuLiuyanEntity = chongwuLiuyanService.selectById(chongwuLiuyan.getId());//查询原先数据
 
         String role = String.valueOf(request.getSession().getAttribute("role"));
-//        if(false)
-//            return R.error(511,"永远不会进入");
-//        else if("用户".equals(role))
-//            chongwuLiuyan.setYonghuId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
+        // IDOR 防护：普通用户只能修改自己的留言
+        if("用户".equals(role)){
+            Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+            if(oldChongwuLiuyanEntity == null || !oldChongwuLiuyanEntity.getYonghuId().equals(sessionUserId)){
+                return R.error(511,"无权修改此留言");
+            }
+            chongwuLiuyan.setYonghuId(sessionUserId);
+        }
         chongwuLiuyan.setUpdateTime(new Date());
 
             chongwuLiuyanService.updateById(chongwuLiuyan);//根据id更新
@@ -301,6 +311,17 @@ public class ChongwuLiuyanController {
     @RequestMapping("/add")
     public R add(@RequestBody ChongwuLiuyanEntity chongwuLiuyan, HttpServletRequest request){
         logger.debug("add方法:,,Controller:{},,chongwuLiuyan:{}",this.getClass().getName(),chongwuLiuyan.toString());
+
+        // 前端保存时强制使用 session 中的用户ID，并校验已完成预约
+        String role = String.valueOf(request.getSession().getAttribute("role"));
+        if("用户".equals(role)){
+            Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+            chongwuLiuyan.setYonghuId(sessionUserId);
+            if(!chongwuYuyueService.hasCompletedBooking(sessionUserId, chongwuLiuyan.getChongwuId())){
+                return R.error(511,"您尚未完成该宠物的预约，无法评价");
+            }
+        }
+
         chongwuLiuyan.setCreateTime(new Date());
         chongwuLiuyan.setInsertTime(new Date());
         chongwuLiuyanService.insert(chongwuLiuyan);

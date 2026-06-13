@@ -28,6 +28,15 @@ import com.utils.DateUtil;
 public class ChongwuYuyueEntity<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /** 预约进度：待审核 */
+    public static final Integer YUYUE_TYPE_PENDING    = 1;
+    /** 预约进度：已通过/待进行 */
+    public static final Integer YUYUE_TYPE_APPROVED   = 2;
+    /** 预约进度：进行中 */
+    public static final Integer YUYUE_TYPE_IN_PROGRESS = 3;
+    /** 预约进度：已完成 */
+    public static final Integer YUYUE_TYPE_COMPLETED  = 4;
+
 
 	public ChongwuYuyueEntity() {
 
@@ -116,6 +125,16 @@ public class ChongwuYuyueEntity<T> implements Serializable {
     @TableField(value = "chongwu_yuyue_shenhe_time")
 
     private Date chongwuYuyueShenheTime;
+
+
+    /**
+     * 预约进度类型
+     * 1=待审核 2=已通过/待进行 3=进行中 4=已完成
+     */
+    @ColumnInfo(comment="预约进度类型",type="int(11)")
+    @TableField(value = "chongwu_yuyue_types")
+
+    private Integer chongwuYuyueTypes;
 
 
     /**
@@ -256,6 +275,19 @@ public class ChongwuYuyueEntity<T> implements Serializable {
         this.chongwuYuyueShenheTime = chongwuYuyueShenheTime;
     }
     /**
+	 * 获取：预约进度类型
+	 */
+    public Integer getChongwuYuyueTypes() {
+        return chongwuYuyueTypes;
+    }
+    /**
+	 * 设置：预约进度类型
+	 */
+
+    public void setChongwuYuyueTypes(Integer chongwuYuyueTypes) {
+        this.chongwuYuyueTypes = chongwuYuyueTypes;
+    }
+    /**
 	 * 获取：预约时间
 	 */
     public Date getChongwuYuyueTime() {
@@ -306,6 +338,7 @@ public class ChongwuYuyueEntity<T> implements Serializable {
             ", chongwuYuyueYesnoTypes=" + chongwuYuyueYesnoTypes +
             ", chongwuYuyueYesnoText=" + chongwuYuyueYesnoText +
             ", chongwuYuyueShenheTime=" + DateUtil.convertString(chongwuYuyueShenheTime,"yyyy-MM-dd") +
+            ", chongwuYuyueTypes=" + chongwuYuyueTypes +
             ", chongwuYuyueTime=" + DateUtil.convertString(chongwuYuyueTime,"yyyy-MM-dd") +
             ", insertTime=" + DateUtil.convertString(insertTime,"yyyy-MM-dd") +
             ", createTime=" + DateUtil.convertString(createTime,"yyyy-MM-dd") +

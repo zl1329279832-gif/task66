@@ -28,6 +28,12 @@ public class ChongwuYuyueView extends ChongwuYuyueEntity implements Serializable
 	@ColumnInfo(comment="报名状态的字典表值",type="varchar(200)")
 	private String chongwuYuyueYesnoValue;
 
+	/**
+	* 预约进度的值
+	*/
+	@ColumnInfo(comment="预约进度的字典表值",type="varchar(200)")
+	private String chongwuYuyueTypesValue;
+
 	//级联表 宠物
 		/**
 		* 宠物名称
@@ -158,6 +164,20 @@ public class ChongwuYuyueView extends ChongwuYuyueEntity implements Serializable
 	*/
 	public void setChongwuYuyueYesnoValue(String chongwuYuyueYesnoValue) {
 		this.chongwuYuyueYesnoValue = chongwuYuyueYesnoValue;
+	}
+
+
+	/**
+	* 获取： 预约进度的值
+	*/
+	public String getChongwuYuyueTypesValue() {
+		return chongwuYuyueTypesValue;
+	}
+	/**
+	* 设置： 预约进度的值
+	*/
+	public void setChongwuYuyueTypesValue(String chongwuYuyueTypesValue) {
+		this.chongwuYuyueTypesValue = chongwuYuyueTypesValue;
 	}
 
 
