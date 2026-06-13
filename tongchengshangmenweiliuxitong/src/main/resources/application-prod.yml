@@ -1,0 +1,27 @@
+# ============================================================
+#  prod 环境（生产）
+#  激活方式：mvn package -Pprod
+# ============================================================
+
+server:
+    port: 8080
+    servlet:
+        context-path: /tongchengshangmenweiliuxitong
+    # 让 Spring Boot 识别 Nginx 反代传来的 X-Forwarded-* headers
+    use-forward-headers: true
+
+spring:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://${DB_HOST:prod-db}:${DB_PORT:3306}/tongchengshangmenweiliuxitong?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=false
+        username: ${DB_USER:tongcheng_prod}
+        password: ${DB_PASS:changeme}
+
+app:
+    upload:
+        dir: /data/upload
+
+logging:
+  level:
+    com.dao: warn
+    root: warn

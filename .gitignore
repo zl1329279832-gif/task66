@@ -1,0 +1,16 @@
+# Build
+tongchengshangmenweiliuxitong/target/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

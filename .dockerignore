@@ -1,0 +1,18 @@
+# Build artifacts
+tongchengshangmenweiliuxitong/target/
+tongchengshangmenweiliuxitong/src/main/resources/admin/admin/node_modules/
+tongchengshangmenweiliuxitong/src/main/resources/admin/admin/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore

@@ -1,0 +1,26 @@
+# ============================================================
+#  local 环境（本地开发，默认 profile）
+#  激活方式：mvn spring-boot:run  或  mvn package -Plocal
+# ============================================================
+
+server:
+    port: 8080
+    servlet:
+        context-path: /tongchengshangmenweiliuxitong
+
+spring:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/tongchengshangmenweiliuxitong?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=false
+        username: root
+        password: 123456
+
+# 上传文件存储根目录（相对于工作目录）
+app:
+    upload:
+        dir: static/upload
+
+# 打印 SQL 日志（仅 local）
+logging:
+  level:
+    com.dao: debug
