@@ -102,6 +102,14 @@ public class ChongwuYuyueController {
         logger.debug("info方法:,,Controller:{},,id:{}",this.getClass().getName(),id);
         ChongwuYuyueEntity chongwuYuyue = chongwuYuyueService.selectById(id);
         if(chongwuYuyue !=null){
+            // IDOR防护：普通用户只能查看自己的预约
+            String role = String.valueOf(request.getSession().getAttribute("role"));
+            if("用户".equals(role)){
+                Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+                if(!chongwuYuyue.getYonghuId().equals(sessionUserId)){
+                    return R.error(511,"无权查看他人的预约");
+                }
+            }
             //entity转view
             ChongwuYuyueView view = new ChongwuYuyueView();
             BeanUtils.copyProperties( chongwuYuyue , view );//把实体数据重构到view中
@@ -140,6 +148,12 @@ public class ChongwuYuyueController {
             return R.error(511,"永远不会进入");
         else if("用户".equals(role))
             chongwuYuyue.setYonghuId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
+
+        // 时间冲突检查：同一宠物在预约时间前后2小时内不能有其他活跃预约
+        String conflict = chongwuYuyueService.checkTimeConflict(chongwuYuyue.getChongwuId(), chongwuYuyue.getChongwuYuyueTime(), null);
+        if (conflict != null) {
+            return R.error(511, conflict);
+        }
 
         Wrapper<ChongwuYuyueEntity> queryWrapper = new EntityWrapper<ChongwuYuyueEntity>()
             .eq("chongwu_id", chongwuYuyue.getChongwuId())
@@ -190,18 +204,18 @@ public class ChongwuYuyueController {
     @RequestMapping("/shenhe")
     public R shenhe(@RequestBody ChongwuYuyueEntity chongwuYuyueEntity, HttpServletRequest request){
         logger.debug("shenhe方法:,,Controller:{},,chongwuYuyueEntity:{}",this.getClass().getName(),chongwuYuyueEntity.toString());
+        return chongwuYuyueService.shenhe(chongwuYuyueEntity);
+    }
 
-        ChongwuYuyueEntity oldChongwuYuyue = chongwuYuyueService.selectById(chongwuYuyueEntity.getId());//查询原先数据
-
-//        if(chongwuYuyueEntity.getChongwuYuyueYesnoTypes() == 2){//通过
-//            chongwuYuyueEntity.setChongwuYuyueTypes();
-//        }else if(chongwuYuyueEntity.getChongwuYuyueYesnoTypes() == 3){//拒绝
-//            chongwuYuyueEntity.setChongwuYuyueTypes();
-//        }
-        chongwuYuyueEntity.setChongwuYuyueShenheTime(new Date());//审核时间
-        chongwuYuyueService.updateById(chongwuYuyueEntity);//审核
-
-        return R.ok();
+    /**
+    * 推进预约状态：审核通过(2)→进行中(4)→已完成(5)
+    */
+    @RequestMapping("/advance")
+    public R advance(@RequestBody ChongwuYuyueEntity chongwuYuyueEntity, HttpServletRequest request){
+        logger.debug("advance方法:,,Controller:{},,id:{}",this.getClass().getName(),chongwuYuyueEntity.getId());
+        String role = String.valueOf(request.getSession().getAttribute("role"));
+        Integer userId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+        return chongwuYuyueService.advanceStatus(chongwuYuyueEntity.getId(), userId, role);
     }
 
     /**
@@ -324,6 +338,14 @@ public class ChongwuYuyueController {
         logger.debug("detail方法:,,Controller:{},,id:{}",this.getClass().getName(),id);
         ChongwuYuyueEntity chongwuYuyue = chongwuYuyueService.selectById(id);
             if(chongwuYuyue !=null){
+                // IDOR防护：普通用户只能查看自己的预约
+                String role = String.valueOf(request.getSession().getAttribute("role"));
+                if("用户".equals(role)){
+                    Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+                    if(!chongwuYuyue.getYonghuId().equals(sessionUserId)){
+                        return R.error(511,"无权查看他人的预约");
+                    }
+                }
 
 
                 //entity转view
@@ -357,14 +379,23 @@ public class ChongwuYuyueController {
     @RequestMapping("/add")
     public R add(@RequestBody ChongwuYuyueEntity chongwuYuyue, HttpServletRequest request){
         logger.debug("add方法:,,Controller:{},,chongwuYuyue:{}",this.getClass().getName(),chongwuYuyue.toString());
+
+        // IDOR防护：强制使用session中的用户ID，忽略前端传入的yonghuId
+        String role = String.valueOf(request.getSession().getAttribute("role"));
+        if("用户".equals(role)){
+            chongwuYuyue.setYonghuId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
+        }
+
+        // 时间冲突检查：同一宠物在预约时间前后2小时内不能有其他活跃预约
+        String conflict = chongwuYuyueService.checkTimeConflict(chongwuYuyue.getChongwuId(), chongwuYuyue.getChongwuYuyueTime(), null);
+        if (conflict != null) {
+            return R.error(511, conflict);
+        }
+
         Wrapper<ChongwuYuyueEntity> queryWrapper = new EntityWrapper<ChongwuYuyueEntity>()
-            .eq("chongwu_yuyue_uuid_number", chongwuYuyue.getChongwuYuyueUuidNumber())
             .eq("chongwu_id", chongwuYuyue.getChongwuId())
             .eq("yonghu_id", chongwuYuyue.getYonghuId())
-            .eq("chongwu_yuyue_text", chongwuYuyue.getChongwuYuyueText())
             .in("chongwu_yuyue_yesno_types", new Integer[]{1,2})
-            .eq("chongwu_yuyue_yesno_text", chongwuYuyue.getChongwuYuyueYesnoText())
-//            .notIn("chongwu_yuyue_types", new Integer[]{102})
             ;
         logger.info("sql语句:"+queryWrapper.getSqlSegment());
         ChongwuYuyueEntity chongwuYuyueEntity = chongwuYuyueService.selectOne(queryWrapper);

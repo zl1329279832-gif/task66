@@ -141,6 +141,17 @@ public class ChongwuLiuyanController {
         else if("用户".equals(role))
             chongwuLiuyan.setYonghuId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
 
+        // 评价门槛：用户必须有该宠物的已完成预约(状态5)才能评价
+        if("用户".equals(role)){
+            int completedCount = chongwuYuyueService.selectCount(new EntityWrapper<ChongwuYuyueEntity>()
+                .eq("chongwu_id", chongwuLiuyan.getChongwuId())
+                .eq("yonghu_id", chongwuLiuyan.getYonghuId())
+                .eq("chongwu_yuyue_yesno_types", 5));
+            if(completedCount == 0){
+                return R.error(511,"只有预约完成后才能评价");
+            }
+        }
+
         chongwuLiuyan.setCreateTime(new Date());
         chongwuLiuyan.setInsertTime(new Date());
         chongwuLiuyanService.insert(chongwuLiuyan);
@@ -301,6 +312,23 @@ public class ChongwuLiuyanController {
     @RequestMapping("/add")
     public R add(@RequestBody ChongwuLiuyanEntity chongwuLiuyan, HttpServletRequest request){
         logger.debug("add方法:,,Controller:{},,chongwuLiuyan:{}",this.getClass().getName(),chongwuLiuyan.toString());
+
+        // IDOR防护：强制使用session中的用户ID
+        String role = String.valueOf(request.getSession().getAttribute("role"));
+        if("用户".equals(role)){
+            Integer sessionUserId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
+            chongwuLiuyan.setYonghuId(sessionUserId);
+
+            // 评价门槛：用户必须有该宠物的已完成预约(状态5)才能评价
+            int completedCount = chongwuYuyueService.selectCount(new EntityWrapper<ChongwuYuyueEntity>()
+                .eq("chongwu_id", chongwuLiuyan.getChongwuId())
+                .eq("yonghu_id", sessionUserId)
+                .eq("chongwu_yuyue_yesno_types", 5));
+            if(completedCount == 0){
+                return R.error(511,"只有预约完成后才能评价");
+            }
+        }
+
         chongwuLiuyan.setCreateTime(new Date());
         chongwuLiuyan.setInsertTime(new Date());
         chongwuLiuyanService.insert(chongwuLiuyan);
